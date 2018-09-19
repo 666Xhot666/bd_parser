@@ -1,0 +1,14 @@
+{
+  "name": "script",
+  "version": "1.0.0",
+  "description": "",
+  "main": "parser.js",
+  "scripts": {
+    "test": "parser start"
+  },
+  "author": "Xhot",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "^4.0.2"
+  }
+}
