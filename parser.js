@@ -8,14 +8,13 @@ const spl = /,(?!0|\s|\s-|500|980)/g
 
 var File = Fs.readFileSync(FilePath, {
   encoding: 'utf-8'
+}, function(err) {
+  console.log(err);
 })
-
-Fs.close();
 
 File = File.split('\r\n')
 
 var Headers = File.shift().replace(/["\r]/g, '').split(','),
-  OutPath = Path.join(__dirname, FileNameOut),
   JsonFormatting = [],
   GameJson = {},
   TeamJson = {},
@@ -51,13 +50,12 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
     TMPJson.Weight = (TMPJson.Weight == 'NA') ? '' : TMPJson.Weight;
     TMPJson.Height = (TMPJson.Height == 'NA') ? '' : TMPJson.Height
 
-    TeamJson[TMPJson.NOC] = [TMPJson.NOC, TMPJson.Team]
+    if (TMPJson.NOC != void 0) TeamJson[TMPJson.NOC] = [TMPJson.NOC, TMPJson.Team]
     SportJson[TMPJson.Sport] = TMPJson.Sport
     EventJson[TMPJson.Event] = TMPJson.Event
     AthletesJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Sex, TMPJson.Age, [TMPJson.Weight, TMPJson.Height], TMPJson.ID]
-
     if (TMPJson.Year != 1906) {
-      ResultJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Year, TMPJson.Season, TMPJson.City, TMPJson.Sport, TMPJson.Event, TMPJson.Medal]
+      ResultJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Year, TMPJson.Season, TMPJson.Sport, TMPJson.Event, TMPJson.Medal]
       if (GameJson[TMPJson.Year] === void 0) GameJson[TMPJson.Year] = {
         0: [],
         1: []
@@ -69,61 +67,44 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
 
   console.log('Connected to the olympic_history database.');
 
-   for (var row in SportJson) {
-     db.run(`INSERT or REPLACE INTO sports(name) VALUES("${SportJson[row]}")`)
-   }
-   for (var row in EventJson) {
-     db.run(`INSERT or REPLACE INTO events(name) VALUES("${EventJson[row]}")`)
-   }
-   for (var row in AthletesJson) {
-     let AthletesRow = AthletesJson[row];
-     db.run(`INSERT or REPLACE INTO athletes(full_name,sex,age,params,team_id) VALUES("${AthletesRow[0]}","${AthletesRow[1]}","${AthletesRow[2]}","${AthletesRow[3]}","${AthletesRow[4]}")`)
-   }
-   for (var row in TeamJson) {
+  for (var row in SportJson) {
+    db.run(`INSERT or REPLACE INTO sports(name) VALUES("${SportJson[row]}")`)
+  }
+  for (var row in EventJson) {
+    db.run(`INSERT or REPLACE INTO events(name) VALUES("${EventJson[row]}")`)
+  }
+  for (var row in AthletesJson) {
+    let AthletesRow = AthletesJson[row];
+    db.run(`INSERT or REPLACE INTO athletes(full_name,sex,age,params,team_id) VALUES("${AthletesRow[0]}","${AthletesRow[1]}","${AthletesRow[2]}","${AthletesRow[3]}","${AthletesRow[4]}")`)
+  }
+  for (var row in TeamJson) {
     let TeamJsonRow = TeamJson[row];
-     if (TeamJsonRow[0] != void 0) db.run(`INSERT or REPLACE INTO teams(noc_name,name) VALUES("${TeamJsonRow[0]}","${TeamJsonRow[1]}")`)
-   }
-   for (var col in GameJson) {
-     let GameJsonCol = GameJson[col];
- 
-     if (GameJsonCol[0].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","0","${GameJsonCol[0]}")`)
-     if (GameJsonCol[1].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","1","${GameJsonCol[1]}")`)
+    db.run(`INSERT or REPLACE INTO teams(noc_name,name) VALUES("${TeamJsonRow[0]}","${TeamJsonRow[1]}")`)
   }
 
-  var JsonId = {
-    a: [],
-    b: [],
-    c: [],
-    d: []
+  for (var col in GameJson) {
+    let GameJsonCol = GameJson[col];
+
+    if (GameJsonCol[0].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","0","${GameJsonCol[0]}")`)
+    if (GameJsonCol[1].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","1","${GameJsonCol[1]}")`)
   }
 
   for (var row in ResultJson) {
-
     var ResultJsonRow = ResultJson[row]
     let Name = ResultJsonRow[0],
       Year = ResultJsonRow[1],
       Season = ResultJsonRow[2],
-      Sport = ResultJsonRow[4],
-      Event = ResultJsonRow[5],
-      Medal = ResultJsonRow[6]
-
-    db.get(`SELECT id  FROM athletes WHERE full_name = "${Name}"`, function(err, athlete) {
-      JsonId.a.push(athlete.id)
-      db.get(`SELECT id FROM games WHERE year = "${Year}" and Season = "${Season}"`, function(err, game) {
-        JsonId.b.push(game.id)
-        db.get(`SELECT id FROM sports WHERE name = "${Sport}"`, function(err, sport) {
-          JsonId.c.push(sport.id)
-          db.get(`SELECT id FROM events WHERE name = "${Event}"`, function(err, event) {
-            JsonId.d.push(event.id)
-
-            console.log(JsonId);
-            db.run(`INSERT or REPLACE INTO results(athlete_id, game_id, sport_id, event_id, medal) VALUES("${JsonId.a}","${JsonId.b}","${JsonId.c}","${JsonId.d}","${Medal}") `)
-
-          })
-        })
-      })
-    })
-
+      Sport = ResultJsonRow[3],
+      Event = ResultJsonRow[4],
+      Medal = ResultJsonRow[5]
+    db.get(`INSERT INTO results(athlete_id, event_id, game_id, sport_id, medal) SELECT athletes.id, events.id, games.id, sports.id, "${Medal}" FROM athletes, events, games, sports, teams
+                    WHERE athletes.full_name="${Name}"
+                    AND events.name="${Event}"
+                    AND games.year="${Year}" and games.season="${Season}"
+                    AND sports.name="${Sport}"
+                    LIMIT 1`, (err, row) => {
+      console.log(err)
+    });
   }
-
+  db.close();
 });
