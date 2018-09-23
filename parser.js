@@ -1,8 +1,11 @@
 const Fs = require('fs')
 const Path = require('path')
 const sqlite = require('sqlite3').verbose();
+const Diagram = require('./Diagram.js');
+
 const FileName = '/data/athlete_events.csv'
 const FilePath = Path.join(__dirname, FileName);
+
 const rep = /("\s*)|(\s\([-A-z,]*\))/g
 const spl = /,(?!0|\s|\s-|500|980)/g
 
@@ -53,7 +56,7 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
     if (TMPJson.NOC != void 0) TeamJson[TMPJson.NOC] = [TMPJson.NOC, TMPJson.Team]
     SportJson[TMPJson.Sport] = TMPJson.Sport
     EventJson[TMPJson.Event] = TMPJson.Event
-    AthletesJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Sex, TMPJson.Age, [TMPJson.Weight, TMPJson.Height], TMPJson.ID]
+    AthletesJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Sex, TMPJson.Age, [TMPJson.Weight, TMPJson.Height], TMPJson.NOC]
     if (TMPJson.Year != 1906) {
       ResultJson[TMPJson.Name] = [TMPJson.Name, TMPJson.Year, TMPJson.Season, TMPJson.Sport, TMPJson.Event, TMPJson.Medal]
       if (GameJson[TMPJson.Year] === void 0) GameJson[TMPJson.Year] = {
@@ -67,16 +70,15 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
 
   console.log('Connected to the olympic_history database.');
 
+  return 0;
+
   for (var row in SportJson) {
     db.run(`INSERT or REPLACE INTO sports(name) VALUES("${SportJson[row]}")`)
   }
   for (var row in EventJson) {
     db.run(`INSERT or REPLACE INTO events(name) VALUES("${EventJson[row]}")`)
   }
-  for (var row in AthletesJson) {
-    let AthletesRow = AthletesJson[row];
-    db.run(`INSERT or REPLACE INTO athletes(full_name,sex,age,params,team_id) VALUES("${AthletesRow[0]}","${AthletesRow[1]}","${AthletesRow[2]}","${AthletesRow[3]}","${AthletesRow[4]}")`)
-  }
+
   for (var row in TeamJson) {
     let TeamJsonRow = TeamJson[row];
     db.run(`INSERT or REPLACE INTO teams(noc_name,name) VALUES("${TeamJsonRow[0]}","${TeamJsonRow[1]}")`)
@@ -87,6 +89,13 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
 
     if (GameJsonCol[0].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","0","${GameJsonCol[0]}")`)
     if (GameJsonCol[1].length != 0) db.run(`INSERT or REPLACE INTO games(year,season,city) VALUES("${col}","1","${GameJsonCol[1]}")`)
+  }
+
+  for (var row in AthletesJson) {
+    let AthletesRow = AthletesJson[row];
+    db.run(`INSERT INTO athletes(team_id, full_name, sex, age, params)
+            SELECT teams.id, "${AthletesRow[0]}","${AthletesRow[1]}","${AthletesRow[2]}","${AthletesRow[3]}" FROM teams
+                    WHERE teams.noc_name = "${AthletesRow[4]}"`)
   }
 
   for (var row in ResultJson) {
@@ -106,5 +115,4 @@ const db = new sqlite.Database('./data/olympic_history.db', sqlite.OPEN_READWRIT
       console.log(err)
     });
   }
-  db.close();
 });
