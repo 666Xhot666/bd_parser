@@ -42,6 +42,7 @@ if (args.length) {
   }
 
   if (chart_name == 'topteams'){
+    if(season != void 0){
     const db = new Sqlite.Database('./data/olympic_history.db', Sqlite.OPEN_READWRITE, (err) => {
 
     if (err) console.error(err.message)
@@ -54,10 +55,13 @@ if (args.length) {
     Diagram({
         'title': 'noc_name',
         'data': row
+            })
+
           })
 
         })
+    }
+      else console.log('Please enter a season');
 
-      })
   }
-} 
+}
