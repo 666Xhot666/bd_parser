@@ -4,9 +4,8 @@ const Sqlite = require('sqlite3').verbose();
 if (args.length) {
 
   const Diagram = require('./Diagram.js');
-  //const DataBase = require('./DataBase.js');
 
-  var noc, season, medal = '>0', year , a = 0, chart_name
+  var noc, season, medal = '>0', year = '' , a = 0, chart_name
 
   for (var key in args) {
 
