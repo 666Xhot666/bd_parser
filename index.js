@@ -1,66 +1,82 @@
 const args = process.argv.slice(2)
+
 const Sqlite = require('sqlite3').verbose();
 
 if (args.length) {
+  const db = new Sqlite.Database('./data/olympic_history.db', Sqlite.OPEN_READWRITE, (err) => {
+    if (err) console.error(err.message);
+    else {
 
-  const Diagram = require('./Diagram.js');
+      const parameters = require('./parameter-parser.js')
+      const data = parameters(args);
 
-  var noc, season, medal = '>0', year = '' , a = 0, chart_name
+      const query = require('./search-data.js')
 
-  for (var key in args) {
+      const Diagram = require('./diagram.js');
 
-    var param = args[key].toLowerCase()
+      console.log('Connected to the olympic_history database.');
 
-    if (param.length == 3) noc = param.toUpperCase();
-    if(Number(param)) year = ' AND games.Year = ' + param;
-    if (param == 'summer' || param == 'winter') season = (param == 'summer') ? 0 : 1;
-    if (param == 'gold' || param == 'silver' || param == 'bronze') medal = (param == 'gold') ? '=1 ' : (param == 'gold') ? '=2' : '=3'
-    if(param == 'topteams' || param == 'medals') chart_name = param;
-  }
+      switch (data.chart_name) {
 
-  if (chart_name == void 0 )  console.log('Error please enter chart_name of diagram');
-  if (chart_name == 'medals'){
-    if(season != void 0 & noc != void 0){
-    const db = new Sqlite.Database('./data/olympic_history.db', Sqlite.OPEN_READWRITE, (err) => {
+        case 'medals':
+          {
+            if (data.season != undefined && data.noc != undefined) {
 
-    if (err) console.error(err.message)
-    else console.log('Connected to the olympic_history database.');
+              db.all(query({
+                tableselect: 'games.year',
+                season: data.season,
+                medal: data.medal,
+                noc: data.noc,
+              }), (err, row) => {
 
-    db.all(`SELECT games.year, results.medal FROM athletes, teams, results, games WHERE teams.noc_name="${noc}" AND games.season="${season}" AND athletes.team_id=teams.id AND results.game_id=games.id AND results.athlete_id=athletes.id AND medal${medal}`, (err, row) => {
+                Diagram({
+                  'title': 'noc_name',
+                  'data': row
+                });
 
-      Diagram({
-        'title': 'year',
-        'data': row
-          })
+              });
 
-        })
+            } else {
+              console.log('Please enter season and noc');
+            };
 
-      })
+          }
+          break;
+
+        case 'topteams':
+          {
+            if (data.season != undefined) {
+
+              db.all(query({
+                tableselect: 'teams.noc_name',
+                season: data.season,
+                medal: data.medal,
+                year: data.year,
+              }), (err, row) => {
+
+                Diagram({
+                  'title': 'team',
+                  'data': row
+                });
+
+              });
+
+            } else {
+              console.log('Please enter season');
+            }
+
+          }
+          break;
+
+        default:
+          console.log('Please enter a chart_name');
+
+      }
+
     }
-      else console.log('Please enter season and noc ');
-  }
 
-  if (chart_name == 'topteams'){
-    if(season != void 0){
-    const db = new Sqlite.Database('./data/olympic_history.db', Sqlite.OPEN_READWRITE, (err) => {
+  });
 
-    if (err) console.error(err.message)
-    else console.log('Connected to the olympic_history database.');
-    db.all(`SELECT teams.noc_name, results.medal
-              FROM athletes, teams, results, games
-                WHERE games.season=${season}  ${year}
-                  AND athletes.team_id=teams.id AND results.game_id=games.id AND results.athlete_id=athletes.id AND medal ${medal}`, (err, row) => {
-
-    Diagram({
-        'title': 'noc_name',
-        'data': row
-            })
-
-          })
-
-        })
-    }
-      else console.log('Please enter a season');
-
-  }
+} else {
+  console.log('For build diagram, please enter parameters');
 }
