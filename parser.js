@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
-const buildData = require('./build-data.js');
-const buildBase = require('./build-database.js');
+const buildData = require('./build-data');
+const buildBase = require('./build-database');
 const data = buildData();
 
 for (let key in data.sportData) {

@@ -1,12 +1,12 @@
 const args = process.argv.slice(2);
 
-const parameters = require('./parameter-parser.js');
+const parameters = require('./parameter-parser');
 
 const Sqlite = require('sqlite3').verbose();
 
-const query = require('./search-data.js');
+const query = require('./search-data');
 
-const diagram = require('./diagram.js');
+const diagram = require('./diagram');
 
 const data = parameters(args);
 
