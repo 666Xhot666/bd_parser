@@ -1,60 +1,32 @@
 module.exports = (option) => {
-  const data = {}
-  for (let key in option) {
-    let param = option[key].toLowerCase()
-    switch (param) {
-
-      case 'summer':
-        {
-          data.season = 0;
-        }
-        break;
-      case 'winter':
-        {
-          data.season = 1;
-        }
-        break;
-
-      case 'gold':
-        {
-          data.medal = '=1';
-        }
-        break;
-      case 'silver':
-        {
-          data.medal = '=2';
-        }
-        break;
-      case 'bronze':
-        {
-          data.medal = '=3';
-        }
-        break;
-
-      case 'topteams':
-        {
-          data.chart_name = param;
-        }
-        break;
-      case 'medals':
-        {
-          data.chart_name = param;
-        }
-        break;
-      case year = (+param) ? param:
-        '' : {
-          data.year = param;
-        }
-        break;
-      case noc = (param.length === 3) ? param:
-        '' : {
-          data.noc = param.toUpperCase();
-        }
-        break;
-      default:
-
-    }
+  const data = {
+    medal: `> '0'`
   }
 
+  option.forEach(value => {
+    value = value.toLowerCase()
+
+    if (value === 'gold' || value === 'silver' || value === 'bronze') {
+      data.medal = (value === 'gold') ? `= '1'` :
+        (value === 'silver') ? `= '2'` : `= '3'`
+    }
+
+    if (value === 'summer' || value === 'winter') {
+      data.season = (value === 'summer') ? '0' : '1';
+    }
+
+    if (value === 'medals' || value === 'topteams') {
+      data.chart_name = value
+    }
+
+    if (value.length === 3) {
+      data.noc = value.toUpperCase()
+    }
+
+    if (+value) {
+      data.year = value;
+    }
+
+  })
   return data;
 }

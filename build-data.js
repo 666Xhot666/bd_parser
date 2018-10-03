@@ -11,11 +11,11 @@ module.exports = function() {
     },
     err => console.log(err)).split('\r\n')
 
-  let headers = file.shift().replace(/["\r]/g, '').split(','),
-    mainData = {},
-    data = {};
+  const headers = file.shift().replace(/["\r]/g, '').split(',')
+  const mainData = {}
+  const data = {}
 
-    data.gameData = {},
+  data.gameData = {},
     data.teamData = {},
     data.sportData = {},
     data.eventData = {},
@@ -33,28 +33,43 @@ module.exports = function() {
     if (mainData.Weight === 'NA') mainData.Weight = '';
     if (mainData.Height === 'NA') mainData.Height = '';
 
-    mainData.Season = (mainData.Season === 'Summer') ? 0 : 1;
+    if (mainData.Season === 'Summer') {
+      mainData.Season = '0';
+    } else {
+      mainData.Season = '1';
+    };
 
-    mainData.Medal = (mainData.Medal === 'NA') ? 0 :
-      (mainData.Medal === 'Gold') ? 1 :
-      (mainData.Medal === 'Silver') ? 2 : 3;
+    if (mainData.Medal != 'NA') {
+      mainData.Medal = (mainData.Medal === 'Gold') ? 1 :
+        (mainData.Medal === 'Silver') ? 2 : 3;
+    } else {
+      mainData.Medal = 0;
+    };
 
-    if (mainData.NOC) {
-      data.teamData[mainData.NOC] = [mainData.NOC, mainData.Team];
-    }
+    if (mainData.NOC) data.teamData[mainData.NOC] = [mainData.NOC, mainData.Team];
 
-    if (mainData.Sport) {
-      data.sportData[mainData.Sport] = mainData.Sport;
-    }
+    if (mainData.Sport) data.sportData[mainData.Sport] = mainData.Sport;
 
-    if (mainData.Event) {
+    if (mainData.Event)
       data.eventData[mainData.Event] = mainData.Event;
-    }
 
-    data.athletesData[mainData.Name] = [mainData.Name, mainData.Sex, mainData.Age, [mainData.Weight, mainData.Height], mainData.NOC]
+    data.athletesData[mainData.Name] = [
+      mainData.Name,
+      mainData.Sex,
+      mainData.Age,
+      [mainData.Weight, mainData.Height],
+      mainData.NOC
+    ]
 
     if (mainData.Year != 1906) {
-      data.resultData[mainData.Name] = [mainData.Name, mainData.Year, mainData.Season, mainData.Sport, mainData.Event, mainData.Medal]
+      data.resultData[mainData.Name] = [
+        mainData.Name,
+        mainData.Year,
+        mainData.Season,
+        mainData.Sport,
+        mainData.Event,
+        mainData.Medal
+      ]
 
       if (!data.gameData[mainData.Year]) data.gameData[mainData.Year] = {
         0: [],
@@ -67,7 +82,7 @@ module.exports = function() {
     }
 
   })
-  
+
   return data;
 
 }

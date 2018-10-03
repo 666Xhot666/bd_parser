@@ -7,17 +7,20 @@ const db = new Sqlite.Database('./data/olympic_history.db', Sqlite.OPEN_READWRIT
 
 exports.writeToBaseValues = (options) => {
 
-  let data = options.data,
-    index = 1
+  const data = options.data;
+  const query = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`;
 
-  let query = "INSERT or REPLACE INTO " + options.table + '(' + Object.keys(data) + ') ',
-    values = ['VALUES(', ')']
+  let values = ['VALUES(', ')'],
+    index = 1;
 
   for (let key in data) {
+    let value;
 
-    let value = (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) ?
-      '"' + data[key] + '",' :
-      '"' + data[key] + '"'
+    if (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) {
+      value = `"${data[key]}",`
+    } else {
+      value = `"${data[key]}"`
+    }
 
     values.splice(index, 0, value)
 
@@ -30,17 +33,19 @@ exports.writeToBaseValues = (options) => {
 }
 
 exports.writeToBaseSelect = (options) => {
-  let data = options.data,
+  const data = options.data
+  const query = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`
+
+  let values = ['SELECT', ''],
     index = 1
 
-  let query = "INSERT or REPLACE INTO " + options.table + '(' + Object.keys(data) + ') ',
-    values = ['SELECT', '']
-
   for (let key in data) {
-    let value = (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) ?
-      '"' + data[key] + '",' :
-      ' teams.id FROM teams WHERE teams.noc_name = "' + data[key] + '"'
-
+    let value;
+    if (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) {
+      value = `"${data[key]}",`;
+    } else {
+      value = ` teams.id FROM teams WHERE teams.noc_name = "${data[key]}"`;
+    }
     values.splice(index, 0, value)
 
     index++
@@ -52,21 +57,22 @@ exports.writeToBaseSelect = (options) => {
 
 exports.buildResultTable = (options) => {
 
-  let data = options.data,
-    wheredata = options.where,
-    index = 1
+  const data = options.data;
+  const wheredata = options.where;
+  const insert = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`;
+  const from = `FROM ${options.from}`;
 
-  let insert = "INSERT or REPLACE INTO " + options.table + '(' + Object.keys(data) + ') ',
-    select = ['SELECT ', ''],
-    from = ' FROM ' + options.from,
+  let index = 1,
+    select = [' SELECT ', ''],
     where = [' WHERE ', '']
 
   for (let key in data) {
 
-    let value = (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) ?
-      '' + data[key] + ',' :
-      '"' + data[key] + '"';
-
+    if (Object.keys(data).length != Object.keys(data).indexOf(key) + 1) {
+      value = `  ${data[key]},`;
+    } else {
+      value = ` "${data[key]}" `;
+    }
     select.splice(index, 0, value)
 
     index++
@@ -75,13 +81,14 @@ exports.buildResultTable = (options) => {
 
   for (let key in wheredata) {
 
-    let value = (Object.keys(wheredata).length != Object.keys(wheredata).indexOf(key) + 1) ?
-      '' + key + ' = "' + wheredata[key] + '" AND ' :
-      '' + key + '= "' + wheredata[key] + '" LIMIT 1';
+    if (Object.keys(wheredata).length != Object.keys(wheredata).indexOf(key) + 1) {
+      value = `${key} = "${wheredata[key]}" AND `
+    } else {
+      value = `${key} = "${wheredata[key]}" LIMIT 1`
+    }
 
     where.splice(index, 0, value)
   }
-
   db.run(insert + select.join('') + from + where.join(''))
 
 }
