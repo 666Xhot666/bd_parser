@@ -29,4 +29,5 @@ $ node parser
 $ node app (chart_name) (season) (year)  (noc medal) 
 ```
 > chart_name(medals or topteams)
+> 
 > season(summer or winter)
