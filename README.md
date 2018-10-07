@@ -1,3 +1,32 @@
-# bd_parser
-For import data into sqlite database open parser.js ; 
-For view a diagram open app.js (node index chart_name(medals or topteams) other param)
+# BD_parser
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+
+BD_Parser is a script for:
+
+  - Transfering data from files .csv in SQLite base 
+  - Showed line diagram about data in base
+  
+You can now:
+  - Import and save data from file .csv
+  - Viev diagram about olimpic games
+
+> In future this project was update for another type of data;
+### Using
+##### Create database:
+- Create a folder 'Data' into folder 'bd_parser' 
+- Insert into Data two files:
+    - .csv 
+    - .bd(sqlite)
+- Start parser 
+```sh
+$ node parser
+```
+- After finish you are have file (.bd) with data from (.csv) 
+
+##### Viev diagram:
+- Start app with parametres
+```sh
+$ node app (chart_name) (season) (year)  (noc medal) 
+```
+> chart_name(medals or topteams)
+> season(summer or winter)
