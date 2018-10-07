@@ -1,12 +1,13 @@
-module.exports = function(options) {
-
+module.exports = function (options) {
   const str = String.fromCharCode(0x258C);
 
-  let data = [],
-    сoeff = 1;
+  let data = [];
 
-  for (let row in options.data) {
-    let param = options.data[row][Object.keys(options.data[row])[0]];
+
+  let сoeff = 1;
+
+  for (const row in options.data) {
+    const param = options.data[row][Object.keys(options.data[row])[0]];
     if (!data[param]) {
       data[param] = options.data[row].medal;
     } else {
@@ -14,9 +15,7 @@ module.exports = function(options) {
     }
   }
 
-  data = Object.entries(data).sort((a, b) => {
-    return (b[1] - a[1])
-  });
+  data = Object.entries(data).sort((a, b) => (b[1] - a[1]));
 
   if (data[1][0].length === 3) сoeff = 200 / data[1][1];
 
@@ -24,5 +23,4 @@ module.exports = function(options) {
   console.log(options.title, 'Amount');
 
   data.forEach(Row => console.log(Row[0], str.repeat(Row[1] * сoeff)));
-
-}
+};

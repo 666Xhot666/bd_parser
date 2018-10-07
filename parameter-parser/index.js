@@ -1,14 +1,15 @@
 module.exports = (option) => {
   const data = {
-    medal: `> '0'`
-  }
+    medal: '> \'0\'',
+  };
 
-  option.forEach(value => {
-    value = value.toLowerCase()
+  option.forEach((value) => {
+    value = value.toLowerCase();
 
     if (value === 'gold' || value === 'silver' || value === 'bronze') {
-      data.medal = (value === 'gold') ? `= '1'` :
-        (value === 'silver') ? `= '2'` : `= '3'`
+      if (value === 'gold') { data.medal = '= \'1\''; }
+      if (value === 'silver') { data.medal = '= \'2\''; }
+      if (value === 'bronze') { data.medal = '= \'3\''; }
     }
 
     if (value === 'summer' || value === 'winter') {
@@ -16,17 +17,16 @@ module.exports = (option) => {
     }
 
     if (value === 'medals' || value === 'topteams') {
-      data.chart_name = value
+      data.chart_name = value;
     }
 
     if (value.length === 3) {
-      data.noc = value.toUpperCase()
+      data.noc = value.toUpperCase();
     }
 
     if (+value) {
       data.year = value;
     }
-
-  })
+  });
   return data;
-}
+};
