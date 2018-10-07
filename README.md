@@ -26,8 +26,6 @@ $ node parser
 ##### Viev diagram:
 - Start app with parametres
 ```sh
-$ node app (chart_name) (season) (year)  (noc medal) 
+$ node app [/medals[season,noc[medal]] | /topteams[season[year,medal]]]
 ```
-> chart_name(medals or topteams)
-> 
-> season(summer or winter)
+
