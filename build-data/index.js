@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const rep = /("\s*)|(\s\([-A-z,]*\))/g;
+const rep = /("\s*)|(\s\([-A-z,]*\))|(\s\([-A-z, ]*\))/g;
 const spl = /,(?!0|\s|\s-|[0-9]{3}\s)/g;
 
 const mainData = {};

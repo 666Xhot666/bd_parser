@@ -3,34 +3,6 @@ const buildBase = require('./build-database');
 
 const data = buildData.createData();
 
-Object.entries(data.sportData).forEach((row) => {
-  buildBase.writeToBaseValues({
-    table: 'sports',
-    data: {
-      name: row[1],
-    },
-  });
-});
-
-Object.entries(data.eventData).forEach((row) => {
-  buildBase.writeToBaseValues({
-    table: 'events',
-    data: {
-      name: row[1],
-    },
-  });
-});
-
-Object.entries(data.teamData).forEach((row) => {
-  buildBase.writeToBaseValues({
-    table: 'teams',
-    data: {
-      noc_name: row[1][0],
-      name: row[1][1],
-    },
-  });
-});
-
 Object.entries(data.gameData).forEach((row) => {
   if (row[1][0].length) {
     buildBase.writeToBaseValues({
@@ -53,6 +25,35 @@ Object.entries(data.gameData).forEach((row) => {
     });
   }
 });
+
+Object.entries(data.teamData).forEach((row) => {
+  buildBase.writeToBaseValues({
+    table: 'teams',
+    data: {
+      noc_name: row[1][0],
+      name: row[1][1],
+    },
+  });
+});
+
+Object.entries(data.sportData).forEach((row) => {
+  buildBase.writeToBaseValues({
+    table: 'sports',
+    data: {
+      name: row[1],
+    },
+  });
+});
+
+Object.entries(data.eventData).forEach((row) => {
+  buildBase.writeToBaseValues({
+    table: 'events',
+    data: {
+      name: row[1],
+    },
+  });
+});
+
 
 Object.entries(data.athletesData).forEach((row) => {
   buildBase.writeToBaseSelect({

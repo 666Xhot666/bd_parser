@@ -2,7 +2,18 @@ const sqlite = require('sqlite3').verbose();
 
 const db = new sqlite.Database('../bd_parser/Data/olympic_history.db', sqlite.OPEN_READWRITE, (err) => {
   if (err) console.error(err.message);
-  else console.log('Connected to the olympic_history database.');
+  else {
+    console.log('Connected to the olympic_history database.');
+    db.run('PRAGMA synchronous = 0;');
+    db.run('PRAGMA journal_mode = OFF;');
+    db.run('DELETE FROM \'athletes\';');
+    db.run('DELETE FROM \'events\';');
+    db.run('DELETE FROM \'games\';');
+    db.run('DELETE FROM \'results\';');
+    db.run('DELETE FROM \'sports\';');
+    db.run('DELETE FROM \'teams\';');
+    db.run('UPDATE sqlite_sequence SET seq=0');
+  }
 });
 
 const constructQuery = function (data, part, valueA, valueB) {
@@ -24,7 +35,7 @@ const constructQuery = function (data, part, valueA, valueB) {
 
 exports.writeToBaseValues = (options) => {
   const data = options.data;
-  const query = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`;
+  const query = `INSERT INTO ${options.table} (${Object.keys(data)})`;
 
   let values = ['VALUES(', ')'];
 
@@ -37,7 +48,7 @@ exports.writeToBaseValues = (options) => {
 
 exports.writeToBaseSelect = (options) => {
   const data = options.data;
-  const query = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`;
+  const query = `INSERT INTO ${options.table} (${Object.keys(data)})`;
 
   let values = ['SELECT', ''];
 
@@ -51,7 +62,7 @@ exports.writeToBaseSelect = (options) => {
 exports.buildResultTable = (options) => {
   const data = options.data;
   const wheredata = options.where;
-  const insert = `INSERT or REPLACE INTO ${options.table} (${Object.keys(data)})`;
+  const insert = `INSERT INTO ${options.table} (${Object.keys(data)})`;
   const from = `FROM ${options.from}`;
 
   let select = [' SELECT ', ''];
