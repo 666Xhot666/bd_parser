@@ -46,7 +46,7 @@ const searchToBuild = (option, db, data) => {
   if (option.err) {
     console.error(error(option.err));
   } else {
-
+    
     db.all(query({
       tableselect: option.tableselect,
       season: data.season,
