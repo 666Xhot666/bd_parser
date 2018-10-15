@@ -2,9 +2,9 @@
   "name": "script",
   "version": "1.0.0",
   "description": "",
-  "main": "parser.js",
+  "main": "main.js",
   "scripts": {
-    "test": "parser start"
+    "start": "node main.js"
   },
   "author": "Xhot",
   "license": "ISC",
