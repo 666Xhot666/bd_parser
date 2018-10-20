@@ -31,5 +31,5 @@ $ npm start [/medals[season,noc[medal]] | /topteams[season[year,medal]]]
 
 ##### Test script with ESlint:
 ```sh
-& npm test
+$ npm test
 ```
