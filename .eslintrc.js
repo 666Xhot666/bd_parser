@@ -8,6 +8,8 @@ module.exports = {
     "semi": [2, "always"],
     "no-param-reassign": [0],
     "no-shadow": [0],
+    'no-console': 'off',
+    'no-plusplus': 'off',
     "class-methods-use-this": [0],
     "prefer-destructuring": [0],
     "no-underscore-dangle": [0],

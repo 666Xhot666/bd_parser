@@ -1,5 +1,5 @@
 // build-database
-const baseInsert = require('./build-database');
+const baseInsert = require('../bd');
 const buidData = require('./build-data');
 const teamInsert = require('./team');
 const sportInsert = require('./sport');

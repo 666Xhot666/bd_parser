@@ -22,7 +22,6 @@ const constructQuery = function (data, part, valueA, valueB) {
   return part;
 };
 
-
 exports.writeToBase = (options) => {
   const data = options.data;
   const query = `INSERT INTO ${options.table} (${Object.keys(data)})`;
@@ -31,6 +30,23 @@ exports.writeToBase = (options) => {
     (key, valueKey) => `"${valueKey}",`,
     (key, valueKey) => `"${valueKey}"`);
   db.run(query + values.join(''));
+};
+
+exports.searchData = (tablename, season, medal, variable, callback) => {
+  const key = () => {
+    if (variable.length === 3) return `AND teams.noc_name = '${variable}'`;
+    if (+variable) return `AND games.year = '${variable}'`;
+    return '';
+  };
+
+  db.all(`SELECT ${tablename}, results.medal
+            FROM athletes, teams, results, games
+            WHERE medal ${medal}
+            AND games.season =  ${season}
+            AND athletes.team_id = teams.id
+            AND results.game_id = games.id
+            AND results.athlete_id = athletes.id
+            ${key()}`, (err, row) => callback(row));
 };
 
 exports.clearBase = result => new Promise(((resolve) => {

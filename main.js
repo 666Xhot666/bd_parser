@@ -1,7 +1,7 @@
 const args = process.argv.slice(2);
 if (args.length) {
-  require('./build-diagram');
+  require('./diagram');
 } else {
-  require('./build-base');
+  require('./base');
   console.log('Start insert data into base');
 }
