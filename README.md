@@ -19,12 +19,17 @@ You can now:
     - .bd(sqlite)
 - Start parser
 ```sh
-$ node parser
+$ npm start
 ```
 - After finish you are have file (.bd) with data from (.csv)
 
 ##### View diagram:
-- Start app with parameters
+- Start npm with parameters
 ```sh
-$ node app [/medals[season,noc[medal]] | /topteams[season[year,medal]]]
+$ npm start [/medals[season,noc[medal]] | /topteams[season[year,medal]]]
+```
+
+##### Test script with ESlint:
+```sh
+& npm test
 ```
