@@ -34,7 +34,10 @@ const bdQuery = (column, title, chart) => {
     medal(args, (medal) => {
       noc(args, chart, (value) => {
         bd.searchData(column, season, medal, value, (row) => {
+          if(row){
           diag(title, row, chart);
+        } else 
+          console.log('Sorry but this information is not exsist');
         });
       });
     });
