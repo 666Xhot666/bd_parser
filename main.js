@@ -1,7 +1,7 @@
 const args = process.argv.slice(2);
+
 if (args.length) {
-  require('./diagram');
+  create:require('./test').create;
 } else {
-  require('./base');
-  console.log('Start insert data into base');
+  create:require('./base').create;
 }
