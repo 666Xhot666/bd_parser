@@ -1,3 +1,4 @@
+`use strict`
 const param = {
   'summer': '0',
   'winter': '1',

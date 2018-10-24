@@ -23,7 +23,7 @@ const constructQuery = function (data, part, valueA, valueB) {
   return part;
 };
 
-function writeToBase(options){
+exports.writeToBase = (options) =>{
   const data = options.data;
   const query = `INSERT INTO ${options.table} (${Object.keys(data)})`;
   let values = ['VALUES(', ')'];
