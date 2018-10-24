@@ -1,28 +1,25 @@
-module.exports = function(options) {
+`use strict`;
+const args = process.argv.slice(2);
 
-  const str = String.fromCharCode(0x258C);
 
-  let data = [],
-    сoeff = 1;
+const medals = require('./medals');
 
-  for (let row in options.data) {
-    let param = options.data[row][Object.keys(options.data[row])[0]];
-    if (!data[param]) {
-      data[param] = options.data[row].medal;
-    } else {
-      data[param] += options.data[row].medal;
-    }
-  }
 
-  data = Object.entries(data).sort((a, b) => {
-    return (b[1] - a[1])
-  });
+const topteams = require('./topteams');
 
-  if (data[1][0].length === 3) сoeff = 200 / data[1][1];
 
-  console.clear();
-  console.log(options.title, 'Amount');
+const diag = require('./build-diagram');
 
-  data.forEach(Row => console.log(Row[0], str.repeat(Row[1] * сoeff)));
 
+const query = require('./query');
+
+
+const param = require('./param-build');
+
+if (args[0] === 'medals') {
+  medals(args.slice(1), diag, query, param);
+} else if (args[0] === 'topteams') {
+  topteams(args.slice(1), diag, query, param);
+} else {
+  console.log('Please enter a right chart_name(medals or topteams)');
 }
