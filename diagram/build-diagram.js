@@ -1,5 +1,8 @@
 "use strict";
 
+const str = String.fromCharCode(0x258C);
+const medal = 'COUNT(results.medal)';
+
 function mathMiddle(data, medal, callback) {
   let middle = 0;
 
@@ -13,8 +16,6 @@ function mathMiddle(data, medal, callback) {
 
 const diagram = {
   topteams: (data) => {
-    const str = String.fromCharCode(0x258C);
-    const medal = 'COUNT(results.medal)';
     const coef = 200 / data[0][medal];
 
     console.clear();
@@ -29,14 +30,13 @@ const diagram = {
   },
 
   medals: (data) => {
-    const str = String.fromCharCode(0x258C);
-    const medal = 'COUNT(results.medal)';
-    const coef = 200 / data[0][medal];
-
-    console.clear();
+    const temporary = {};
+    data.forEach(row => temporary[row.year] = row[medal]);
+    const coef = 200 / Math.max.apply(null, Object.values(temporary));
+    console.clear()
     console.log('Year', 'Amount');
-    Object.values(data).forEach((row) => {
-      console.log(row.year, (row[medal] * coef > 1) ? str.repeat(row[medal] * coef) : str);
+    data.forEach((row) => {
+       console.log(row.year, (row[medal] * coef > 1) ? str.repeat(row[medal] * coef) : str);
     });
   },
 };
