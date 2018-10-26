@@ -13,8 +13,8 @@ You can now:
 > In future this project was update for another type of data;
 ### Using
 ##### Create database:
-- Create a folder 'Data' into folder 'bd_parser'
-- Insert into Data two files:
+- Create a folder 'storage' into folder 'bd_parser'
+- Insert into storage two files:
     - .csv
     - .bd(sqlite)
 - Start parser

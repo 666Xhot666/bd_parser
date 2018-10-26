@@ -8,7 +8,6 @@ const param = {
   bronze: "= '3'",
 };
 
-
 const typeParam = {
   summer: 'season',
   winter: 'season',
@@ -17,11 +16,11 @@ const typeParam = {
   bronze: 'medal',
 };
 
-exports.paramParse = (option) => {
+const paramParse = (option) => {
   const data = {};
 
   option.forEach((value) => {
-    if (+value) {
+    if (+value && value.length === 4) {
       typeParam[value] = 'year';
       param[value] = `= ${value}`;
     }
@@ -33,3 +32,5 @@ exports.paramParse = (option) => {
   });
   return data;
 };
+
+module.exports.paramParse = paramParse;
