@@ -20,7 +20,7 @@ const paramParse = (option) => {
   const data = {};
 
   option.forEach((value) => {
-    if (+value) {
+    if (+value && value.length === 4) {
       typeParam[value] = 'year';
       param[value] = `= ${value}`;
     }
