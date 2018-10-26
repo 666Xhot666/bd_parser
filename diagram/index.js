@@ -1,18 +1,11 @@
-`use strict`;
+"use strict";
+
 const args = process.argv.slice(2);
 
-
 const medals = require('./medals');
-
-
 const topteams = require('./topteams');
-
-
 const diag = require('./build-diagram');
-
-
 const query = require('./query');
-
 
 const param = require('./param-build');
 

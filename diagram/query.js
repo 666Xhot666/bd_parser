@@ -1,6 +1,6 @@
 "use strict";
 
-const bd = require('../bd');
+const bd = require('../database');
 
 const buildQuery = {
   queryMedals(season, medal = '> 0', noc, callback) {

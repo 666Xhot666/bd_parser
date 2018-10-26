@@ -14,11 +14,7 @@ function mathMiddle(data, medal, callback) {
 const diagram = {
   topteams: (data) => {
     const str = String.fromCharCode(0x258C);
-
-
     const medal = 'COUNT(results.medal)';
-
-
     const coef = 200 / data[0][medal];
 
     console.clear();
@@ -34,8 +30,6 @@ const diagram = {
 
   medals: (data) => {
     const str = String.fromCharCode(0x258C);
-
-
     const medal = 'COUNT(results.medal)';
 
     console.clear();
