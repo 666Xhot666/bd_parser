@@ -6,11 +6,11 @@ const medals = function (args, diag, query, param) {
   if (data.season) {
     if (data.noc) {
       query.queryMedals(data.season, data.medal, data.noc, (data) => {
-        if(data){
+        if (data) {
           diag.medals(data);
         } else {
           console.log('Sorry but this information is exsist');
-        };
+        }
       });
     } else {
       console.log('Please chose a noc_name');
