@@ -1,44 +1,69 @@
 "use strict";
 
-const str = String.fromCharCode(0x258C);
-const medal = 'COUNT(results.medal)';
+class Normalize {
+  constructor(data) {
 
-function mathMiddle(data, medal, callback) {
-  let middle = 0;
+    this.data = data;
+    this.result = {};
 
-  Object.values(data).forEach((row, index) => {
-    middle += row[medal];
-    if (index + 1 === data.length) {
-      callback(middle / index);
-    }
-  });
-}
+    this.data.forEach(row => {
 
-const diagram = {
-  topteams: (data) => {
-    const coef = 200 / data[0][medal];
+      if (!this.result[row.year]) {
 
-    console.clear();
-    console.log('Team', 'Amount');
-    mathMiddle(data, medal, (middle) => {
-      Object.values(data).forEach((row) => {
-        if (row[medal] > middle) {
-          console.log(row.noc_name, (row[medal] * coef > 1) ? str.repeat(row[medal] * coef) : str);
-        }
-      });
+        if (row.medal === 0) {
+          this.result[row.year] = 0;
+        } else {
+          this.result[row.year] = 1;
+        };
+
+      } else if (row.medal !== 0) this.result[row.year] += 1;
+
     });
-  },
-
-  medals: (data) => {
-    const temporary = {};
-    data.forEach(row => temporary[row.year] = row[medal]);
-    const coef = 200 / Math.max.apply(null, Object.values(temporary));
-    console.clear()
-    console.log('Year', 'Amount');
-    data.forEach((row) => {
-       console.log(row.year, (row[medal] * coef > 1) ? str.repeat(row[medal] * coef) : str);
-    });
-  },
+    return this.result;
+  };
 };
 
-module.exports = diagram;
+class MiddleValue {
+  constructor(data){
+    this.middle = 0;
+    Object.values(data).forEach((row, index) => {
+          this.middle += row.medal;
+     });
+     this._middle = this.middle/data.length
+  };
+  getMiddle(){
+    return this._middle
+  }
+};
+
+module.exports = class Diagram {
+
+  constructor(data) {
+    this.data = data;
+    this.str = String.fromCharCode(9608);
+    this.maxLenght = 200;
+  };
+
+  medals() {
+    const data = new Normalize(this.data);
+
+    this.coef = this.maxLenght / Math.max.apply(null, Object.values(data));
+
+    Object.entries(data).forEach(row => {
+
+      console.log(row[0], this.str.repeat(row[1] * this.coef));
+      console.log('');
+
+    });
+  };
+
+  topteams() {
+    this.coef = this.maxLenght / this.data[0].medal;
+    const middle = new MiddleValue(this.data).getMiddle();
+    console.log('Team', 'Amount');
+    Object.values(this.data).forEach((row) => {
+      if (row.medal > middle)
+      console.log(row.noc_name,this.str.repeat(row.medal * this.coef));
+    });
+  };
+};
