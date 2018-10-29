@@ -1,7 +1,9 @@
 const args = process.argv.slice(2);
 
+const Diagram = require('./diagram');
+
 if (args.length) {
-  create:require('./diagram').create;
+  new Diagram(args[0],args.slice(1))
 } else {
-  create:require('./create-base').create;
+  require('./create-base');
 }
