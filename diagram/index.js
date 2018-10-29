@@ -1,18 +1,15 @@
 "use strict";
 
-const args = process.argv.slice(2);
+const Build = require('./param')
+const CallChart = require('./chart')
 
-const medals = require('./medals');
-const topteams = require('./topteams');
-const diag = require('./build-diagram');
-const query = require('./query');
+module.exports = class {
+  constructor(name, cmdParam) {
+    this.chart = name;
 
-const param = require('./param-build');
+    this.build = new Build(cmdParam)
+    this.diagram = new CallChart(this.build);
 
-if (args[0] === 'medals') {
-  medals(args.slice(1), diag, query, param);
-} else if (args[0] === 'topteams') {
-  topteams(args.slice(1), diag, query, param);
-} else {
-  console.log('Please enter a right chart_name(medals or topteams)');
-}
+    this.diagram[this.chart]();
+  };
+};

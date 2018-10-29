@@ -1,3 +1,6 @@
 Data
 node_modules
-test-diagram
+test-base
+test-database
+manifest
+manifest.json

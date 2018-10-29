@@ -13,7 +13,7 @@ treatment.file = fs.readFileSync(
   err => console.log(err),
 ).split('\r\n');
 
-treatment.headers = treatment.file.shift().replace(/["\r]/g, '').split(',').slice(1);
+treatment.headers = treatment.file.shift().replace(/["\r]/g, '').split(',');
 
 treatment.rep = /("\s*)|(\s\([-A-z,]*\))|(\s\([-A-z, ]*\))/g;
 treatment.spl = /,(?!0|\s|\s-|[0-9]{3}\s)/g;
