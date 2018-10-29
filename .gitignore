@@ -3,3 +3,4 @@ node_modules
 test-base
 test-database
 manifest
+manifest.json
