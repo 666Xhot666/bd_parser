@@ -1,11 +1,5 @@
 "use strict";
 
-const sqlite = require('sqlite3').verbose();
-
-const db = new sqlite.Database('./storage/olympic_history.db', sqlite.OPEN_READWRITE, (err) => {
-  if (err) console.error(err.message);
-  else console.log('Connected to the olympic_history database.');
-});
 
 const constructQuery = function (data, part, valueA, valueB) {
   let value;
@@ -35,7 +29,7 @@ const baseQuery = {
     db.all(query, (err, row) => callback(row));
   },
 
-  clearBase: result => new Promise(((resolve) => {
+  clearBase: (result) => new Promise(((resolve) => {
     db.serialize(() => {
       db.all('BEGIN', () => {
         db.serialize(() => {
@@ -47,7 +41,7 @@ const baseQuery = {
             .run('DELETE FROM \'events\'')
             .run('PRAGMA synchronous = 0')
             .run('PRAGMA journal_mode = MEMORY')
-            .run('UPDATE sqlite_sequence SET seq=0');
+            .run('UPDATE sqlite_sequence SET seq=0')  ;
         });
       }).all('COMMIT', () => resolve(result));
     });
