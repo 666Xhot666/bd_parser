@@ -1,39 +1,39 @@
 "use strict";
 
-const bd = require('../database');
+  const queryMedals = (db,season, medal, noc, callback) => new Promise(((resolve) => {
+  db.all(`SELECT DISTINCT year, COUNT(noc_name) medals from games
+    LEFT JOIN (
+      SELECT noc_name, y FROM teams
+        LEFT JOIN athletes ON athletes.team_id = teams.id
+        INNER JOIN (
+          SELECT * from results WHERE results.medal ${medal ? '= $_medal' : 'IN (1,2,3)'}
+        ) AS res ON res.athlete_id = athletes.id
+        INNER JOIN (
+          SELECT id, year y from games WHERE games.season = $_season
+        ) AS game ON RES.game_id = game.id
+      WHERE noc_name = $_noc_name
+    ) AS MEDALS ON year = MEDALS.y
+    GROUP BY year
+    ORDER BY year ASC`,{
+        $_medal:`${medal}`,
+        $_noc_name: `${noc}`,
+        $_season: `${season}`
+    }, (err,result) => resolve(result))
+  }))
 
-const buildQuery = {
+ const queryTopteams = (db,season, medal, year, callback) => new Promise(((resolve) => {
+    db.all(`SELECT noc_name noc, COUNT(medal) medals FROM results
+    LEFT JOIN athletes ON results.athlete_id = athletes.id
+    LEFT JOIN teams ON athletes.team_id = teams.id
+    LEFT JOIN games ON results.game_id = games.id
+  WHERE ${year ? `year = $_year AND` : ''} season = $_season AND medal ${medal ? '= $_medal' : 'IN (1, 2, 3)'}
+  GROUP BY noc_name
+  ORDER BY count(medal) DESC`,{
+    $_medal:medal,
+    $_year:year,
+    $_season: season,
+  },(err,result) => resolve(result))
+  }))
 
-  queryMedals(season, medal, noc, callback) {
-    if(medal){
-      this.key =`medal = ${medal} AND`
-    }else{
-      this.key = ``
-    }
-    bd.searchData(`SELECT games.year, results.medal
-              FROM athletes, teams, results, games
-              WHERE ${this.key} games.season =  ${season}
-              AND results.athlete_id = athletes.id
-              AND athletes.team_id = teams.id
-              AND results.game_id = games.id
-              AND teams.noc_name = '${noc}'`, row => callback(row));
-  },
-  
-  queryTopteams(season, medal, year, callback) {
-    if(medal) this.keyMedal =`medal = ${medal} AND`
-    else this.keyMedal = `medal > 0 AND`;
-    if(year) this.keyYear =`AND games.year = ${year}`
-    else this.keyYear = ``;
-    bd.searchData(`SELECT teams.noc_name, COUNT(results.medal) AS medal
-              FROM athletes, teams, results, games
-              WHERE ${this.keyMedal} games.season =  ${season}
-              AND athletes.team_id = teams.id
-              AND results.game_id = games.id
-              AND results.athlete_id = athletes.id
-              ${this.keyYear}
-              GROUP BY teams.noc_name
-              ORDER BY COUNT(results.medal) DESC `, row => callback(row));
-  },
-};
-
-module.exports = buildQuery;
+module.exports.medals = queryMedals;
+module.exports.topteams = queryTopteams;

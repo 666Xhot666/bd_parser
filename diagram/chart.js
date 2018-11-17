@@ -4,8 +4,9 @@ const Diagram = require('./build-diagram');
 const query = require('./query');
 
 module.exports = class {
-  constructor(param) {
+  constructor(param,db) {
     this.param = param;
+    this.db = db;
   };
 
   medals() {
@@ -20,8 +21,8 @@ module.exports = class {
 
     if (this.season) {
       if (this.noc_name) {
-        query.queryMedals(this.season, this.medal, this.noc_name, (data) => {
-          this.diagram = new Diagram(data);
+        query.medals(this.db,this.season, this.medal, this.noc_name).then((result)=>{
+          this.diagram = new Diagram(result);
           this.diagram.medals();
         });
       } else console.log('Please enter a right noc_name(in Upper Case example GRE)');
@@ -39,8 +40,8 @@ module.exports = class {
     console.log('');
 
     if (this.season) {
-      query.queryTopteams(this.season, this.medal, this.year, (data) => {
-        this.diagram = new Diagram(data);
+      query.topteams(this.db,this.season, this.medal, this.year).then((result) => {
+        this.diagram = new Diagram(result);
         this.diagram.topteams();
       });
     } else console.log('Please enter a season (summer or winter)');
